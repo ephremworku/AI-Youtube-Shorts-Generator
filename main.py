@@ -4,10 +4,11 @@ from Components.Transcription import transcribeAudio
 from Components.LanguageTasks import GetHighlight
 from Components.FaceCrop import crop_to_vertical, combine_videos
 
-url = input("Enter YouTube video URL: ")
-Vid= download_youtube_video(url)
-if Vid:
-    Vid = Vid.replace(".webm", ".mp4")
+# url = input("Enter YouTube video URL: ")
+# Vid= download_youtube_video(url)
+if True:
+    # Vid = Vid.replace(".webm", ".mp4")
+    Vid = "videos\Quantum Computers, explained with MKBHD.mp4"
     print(f"Downloaded video and audio files successfully! at {Vid}")
 
     Audio = extractAudio(Vid)
@@ -20,7 +21,7 @@ if Vid:
             for text, start, end in transcriptions:
                 TransText += (f"{start} - {end}: {text}")
 
-            start , stop = GetHighlight(TransText)
+            start , stop = 60, 103
             if start != 0 and stop != 0:
                 print(f"Start: {start} , End: {stop}")
 

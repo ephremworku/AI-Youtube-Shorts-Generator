@@ -86,6 +86,8 @@ def detect_faces_and_speakers(input_video_path, output_video_path):
                 Add.append([[x, y, x1, y1], lip_distance])
 
                 MaxDif == max(lip_distance, MaxDif)
+                Frames.append([x, y, x1, y1])
+
         for i in range(detections.shape[2]):
             confidence = detections[0, 0, i, 2]
             if confidence > 0.3:  # Confidence threshold
@@ -107,7 +109,6 @@ def detect_faces_and_speakers(input_video_path, output_video_path):
                 if lip_distance >= MaxDif:
                     break
 
-        Frames.append([x, y, x1, y1])
 
         out.write(frame)
         cv2.imshow('Frame', frame)

@@ -2,6 +2,7 @@ import openai
 from dotenv import load_dotenv
 import os
 import json
+from openai import OpenAI
 
 load_dotenv()
 
@@ -9,7 +10,10 @@ openai.api_key = os.getenv("OPENAI_API")
 
 if not openai.api_key:
     raise ValueError("API key not found. Make sure it is defined in the .env file.")
-
+client = OpenAI(
+    # This is the default and can be omitted
+    api_key=os.environ.get("OPENAI_API"),
+)
 
 # Function to extract start and end times
 def extract_times(json_string):
@@ -20,8 +24,10 @@ def extract_times(json_string):
         # Extract start and end times as floats
         start_time = float(data[0]["start"])
         end_time = float(data[0]["end"])
+        
 
         # Convert to integers
+
         start_time_int = int(start_time)
         end_time_int = int(end_time)
         return start_time_int, end_time_int
@@ -57,8 +63,8 @@ def GetHighlight(Transcription):
     print("Getting Highlight from Transcription ")
     try:
 
-        response = openai.ChatCompletion.create(
-            model="gpt-4o-2024-05-13",
+        response = client.chat.completions.create(
+            model="gpt-4o",
             temperature=0.7,
             messages=[
                 {"role": "system", "content": system},
@@ -69,7 +75,7 @@ def GetHighlight(Transcription):
         json_string = response.choices[0].message.content
         json_string = json_string.replace("json", "")
         json_string = json_string.replace("```", "")
-        # print(json_string)
+        print(json_string)
         Start, End = extract_times(json_string)
         if Start == End:
             Ask = input("Error - Get Highlights again (y/n) -> ").lower()

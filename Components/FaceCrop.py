@@ -40,12 +40,16 @@ def crop_to_vertical(input_video_path, output_video_path):
     print(fps)
     count = 0
     for _ in range(total_frames):
+        if count == len(Frames):
+            break
         ret, frame = cap.read()
         if not ret:
             print("Error: Could not read frame.")
             break
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+        x=None
+        w=None
         if len(faces) >-1:
             if len(faces) == 0:
                 (x, y, w, h) = Frames[count]
@@ -70,28 +74,29 @@ def crop_to_vertical(input_video_path, output_video_path):
                     break
 
             # print(faces[0])
-            centerX = x+(w//2)
-            print(centerX)
-            print(x_start - (centerX - half_width))
-            if count == 0 or (x_start - (centerX - half_width)) <1 :
-                ## IF dif from prev fram is low then no movement is done
-                pass #use prev vals
-            else:
-                x_start = centerX - half_width
-                x_end = centerX + half_width
+            if x is not None and w is not None:
+                centerX = x+(w//2)
+                print(centerX)
+                print(x_start - (centerX - half_width))
+                if count == 0 or (x_start - (centerX - half_width)) <1 :
+                    ## IF dif from prev fram is low then no movement is done
+                    pass #use prev vals
+                else:
+                    x_start = centerX - half_width
+                    x_end = centerX + half_width
 
 
-                if int(cropped_frame.shape[1]) != x_end- x_start:
-                    if x_end < original_width:
-                        x_end += int(cropped_frame.shape[1]) - (x_end-x_start)
-                        if x_end > original_width:
-                            x_start -= int(cropped_frame.shape[1]) - (x_end-x_start)
-                    else:
-                        x_start -= int(cropped_frame.shape[1]) - (x_end-x_start)
-                        if x_start < 0:
+                    if int(cropped_frame.shape[1]) != x_end- x_start:
+                        if x_end < original_width:
                             x_end += int(cropped_frame.shape[1]) - (x_end-x_start)
-                    print("Frame size inconsistant")
-                    print(x_end- x_start)
+                            if x_end > original_width:
+                                x_start -= int(cropped_frame.shape[1]) - (x_end-x_start)
+                        else:
+                            x_start -= int(cropped_frame.shape[1]) - (x_end-x_start)
+                            if x_start < 0:
+                                x_end += int(cropped_frame.shape[1]) - (x_end-x_start)
+                        print("Frame size inconsistant")
+                        print(x_end- x_start)
 
         count += 1
         cropped_frame = frame[:, x_start:x_end]
@@ -136,6 +141,5 @@ if __name__ == "__main__":
     detect_faces_and_speakers(input_video_path, "DecOut.mp4")
     crop_to_vertical(input_video_path, output_video_path)
     combine_videos(input_video_path, output_video_path, final_video_path)
-
 
 
